@@ -1,7 +1,7 @@
 steps to run wikipedia_extractor:
     pip install wikipedia (to install wikipedia API)
     pip install json (if json is not already installed)
-    run the wiki_extractor.py
+    run wiki_extractor.py
 
 
 
