@@ -24,7 +24,10 @@ def extract_text(filename):
     '''
 
     # Store all the pages of the PDF in a variable
-    pages = convert_from_path(PDF_file,poppler_path=POPPLER_PATH,dpi=200,first_page=1,last_page=10,fmt='jpg')
+    try:
+        pages = convert_from_path(PDF_file,poppler_path=POPPLER_PATH,dpi=200,first_page=1,last_page=10,fmt='jpg')
+    except:
+        return "Invalid Pdf"
     print("converted to image")
 
     # Counter to store images of each page of PDF to image
@@ -79,7 +82,7 @@ urls = list(csv_cont["https://mpsctopper.com/wp-content/uploads/2022/01/12th-std
 
 urls.insert(0,"https://mpsctopper.com/wp-content/uploads/2022/01/12th-std-Political-Science-Book-in-Marathi.pdf")
 
-print(urls)
+#print(urls)
 
 json_data = []
 content = ""
@@ -101,13 +104,16 @@ for url in urls:
 
         links =[]
         for link in soup.select("a[href$='.pdf']"):
-            if link not in links:
+            if urljoin(url,link['href']) not in links:
+                        print("downloading pdf from ",urljoin(url,link['href']))
+                        
                         with open("pdffile.pdf", 'wb') as f:
-                            f.write(requests.get(url).content)
+                            f.write(requests.get(urljoin(url,link['href'])).content)
                         content=extract_text("pdffile.pdf")
-                        json_data.append({"page-url":url,"pdf-url":link, "pdf-content":content})
+                        json_data.append({"page-url":url,"pdf-url":str(urljoin(url,link['href'])), "pdf-content":content})
                         with open("pdf_extract.json", 'w', encoding='utf-8') as f:
                             json.dump(json_data, f, ensure_ascii=False, indent=4)
+                        links.append(urljoin(url,link['href']))    
 
 
                 
